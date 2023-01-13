@@ -24,7 +24,7 @@ import flixel.util.FlxTimer;
 
 using StringTools;
 
-class MainMenuState extends MusicBeatState
+class MenuState extends MusicBeatState
 {
 	public static var psychEngineVersion:String = '0.5.2h'; //This is also used for Discord RPC
 	public static var curSelected:Int = 0;
@@ -43,18 +43,12 @@ class MainMenuState extends MusicBeatState
 	];
 
 	var magenta:FlxSprite;
-	var redlayer:FlxSprite;
-	var logo:FlxSprite;
-	var icon:FlxSprite;
-	var char:FlxSprite;
-	var arrows:FlxSprite;
 	var camFollow:FlxObject;
 	var camFollowPos:FlxObject;
 	var debugKeys:Array<FlxKey>;
 
 	override function create()
 	{
-		WeekData.loadTheFirstEnabledMod();
 
 		#if desktop
 		// Updating Discord Rich Presence
@@ -101,36 +95,6 @@ class MainMenuState extends MusicBeatState
 		
 		// magenta.scrollFactor.set();
 
-		logo = new FlxSprite(-400, -100).loadGraphic(Paths.image('exeller_TITLE_SCREEN')); 
-		logo.frames = Paths.getSparrowAtlas('exeller_TITLE_SCREEN');
-		logo.animation.addByPrefix('idle', "floaty boi", 24);
-		logo.animation.play('idle');
-		logo.antialiasing = ClientPrefs.globalAntialiasing;
-		logo.setGraphicSize(Std.int(logo.width * 0.4));
-		add(logo);
-
-		var icon:FlxSprite = new FlxSprite(645, 90).loadGraphic(Paths.image('dataSelect'));
-		icon.frames = Paths.getSparrowAtlas('dataSelect');
-		icon.animation.addByPrefix('static', "dataselectstatic", 24);
-		icon.animation.play('static');
-		icon.setGraphicSize(Std.int(icon.width * 0.55));
-		icon.updateHitbox();
-		icon.antialiasing = ClientPrefs.globalAntialiasing;
-		add(icon);
-
-		arrows = new FlxSprite(0).loadGraphic(Paths.image('select'));
-		arrows.antialiasing = ClientPrefs.globalAntialiasing;
-		arrows.setGraphicSize(Std.int(0.9));
-		add(arrows);
-
-		char = new FlxSprite(640, 200).loadGraphic(Paths.image('bf'));
-		char.frames = Paths.getSparrowAtlas('bf');
-		char.animation.addByPrefix('idle', "idle", 24);
-		char.animation.play('idle');
-		char.setGraphicSize(Std.int(char.width * 0.35));
-		char.animation.addByPrefix('hey', "hey", 24);
-		add(char);
-
 		menuItems = new FlxTypedGroup<FlxSprite>();
 		add(menuItems);
 
@@ -176,7 +140,6 @@ class MainMenuState extends MusicBeatState
 
 		changeItem();
 
-
 		super.create();
 	}
 
@@ -215,41 +178,8 @@ class MainMenuState extends MusicBeatState
 
 			if (controls.ACCEPT)
 			{
-				if (optionShit[curSelected] == 'donate')
 				{
-					CoolUtil.browserLoad('https://discord.gg/mEnj79rV3r');
-				}
-				else
-				{
-					selectedSomethin = true;
 					FlxG.sound.play(Paths.sound('confirmMenu'));
-					char.animation.play('hey');
-
-					menuItems.forEach(function(spr:FlxSprite)
-					{
-						{
-							var timer:FlxTimer = new FlxTimer().start(1, function(tmr:FlxTimer)
-							{
-								var daChoice:String = optionShit[curSelected];
-
-								switch (daChoice)
-								{
-									case 'story_mode':
-										MusicBeatState.switchState(new StoryMenuState());
-									case 'freeplay':
-										MusicBeatState.switchState(new FreeplayState());
-									case 'characters':
-										MusicBeatState.switchState(new CharactersState());
-									case 'awards':
-										MusicBeatState.switchState(new AchievementsMenuState());
-									case 'gallery':
-										MusicBeatState.switchState(new GalleryState());
-									case 'options':
-										LoadingState.loadAndSwitchState(new options.OptionsState());
-								}
-							});
-						}
-					});
 				}
 			}
 			#if desktop
@@ -273,23 +203,5 @@ class MainMenuState extends MusicBeatState
 		if (curSelected < 0)
 			curSelected = menuItems.length - 1;
 
-		menuItems.forEach(function(spr:FlxSprite)
-		{	
-			spr.animation.play('idle');
-			spr.visible = false;
-			spr.updateHitbox();
-
-			if (spr.ID == curSelected)
-			{
-				spr.animation.play('selected');
-     	        spr.visible = true;
-				var add:Float = 0;
-				if(menuItems.length > 4) {
-					add = menuItems.length * 8;
-				}
-				camFollow.setPosition(spr.getGraphicMidpoint().x, spr.getGraphicMidpoint().y - add);
-				spr.centerOffsets();
-			}
-		});
 	}
 }
